@@ -28,7 +28,7 @@ export default function AboutSection() {
             Our dojo is more than a training ground — it's a community built on respect, perseverance, and the relentless pursuit of excellence. Every student, from white belt to black belt, is part of a legacy.
           </p>
           <p className="text-muted-foreground leading-relaxed font-body">
-            Founded by Sensei Takeshi Yamamoto, 5th Dan, our programs blend traditional Shotokan karate with modern sports science for complete martial arts development.
+            Founded by Shihan Ram Gudme, 6th Dan, our programs blend traditional Shotokan/Goju-Ryu karate with modern sports science for complete martial arts development.
           </p>
         </motion.div>
 
