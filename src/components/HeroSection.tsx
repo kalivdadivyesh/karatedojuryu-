@@ -1,12 +1,9 @@
 import { motion } from "framer-motion";
-import HeroCanvas from "./HeroCanvas";
 
 export default function HeroSection() {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <HeroCanvas />
-
-      {/* Radial glow */}
+      {/* Radial glow - semi-transparent */}
       <div className="absolute inset-0 z-[1]" style={{ background: "var(--gradient-glow)" }} />
 
       <div className="relative z-10 text-center px-6 max-w-4xl">

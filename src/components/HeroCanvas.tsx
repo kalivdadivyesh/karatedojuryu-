@@ -252,7 +252,7 @@ function KatanaModel() {
 
 export default function HeroCanvas() {
   return (
-    <div className="absolute inset-0 z-0">
+    <div className="w-full h-full">
       <Canvas
         camera={{ position: [0, 0.3, 3], fov: 45 }}
         dpr={[1, 2]}
