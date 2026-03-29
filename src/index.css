@@ -76,10 +76,17 @@
 @layer components {
   .glass-card {
     @apply rounded-xl border;
-    background: hsl(var(--glass-bg) / 0.6);
-    border-color: hsl(var(--glass-border) / 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: hsl(var(--glass-bg) / 0.5);
+    border-color: hsl(var(--glass-border) / 0.3);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .section-padding {
+    @apply px-6 md:px-12 lg:px-24 py-24 md:py-32;
+    background: hsl(var(--background) / 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .glow-text {
@@ -106,8 +113,6 @@
     transform: translateY(-2px);
   }
 
-  .section-padding {
-    @apply px-6 md:px-12 lg:px-24 py-24 md:py-32;
   }
 }
 

@@ -5,7 +5,7 @@ const footerLinks = ["Privacy", "Terms", "Schedule"];
 
 export default function Footer() {
   return (
-    <footer id="contact" className="border-t border-border/30 px-6 md:px-12 lg:px-24 py-16">
+    <footer id="contact" className="border-t border-border/30 px-6 md:px-12 lg:px-24 py-16" style={{ background: "hsl(0 0% 5% / 0.7)", backdropFilter: "blur(12px)" }}>
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
         <div>
           <span className="font-display font-bold text-xl glow-text tracking-widest">武道 BUSHIDO</span>
