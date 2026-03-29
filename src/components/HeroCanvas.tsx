@@ -185,26 +185,31 @@ function KatanaModel() {
   const groupRef = useRef<THREE.Group>(null);
   const drawProgressRef = useRef(0);
   const targetDraw = useRef(0);
+  const targetRotX = useRef(0.1);
+  const targetRotY = useRef(-0.3);
+  const targetRotZ = useRef(0.15);
   const targetZ = useRef(0);
-  const currentZ = useRef(0);
-  const currentScale = useRef(1);
-  const targetScale = useRef(1);
   const [drawProgress, setDrawProgress] = useState(0);
   const { viewport } = useThree();
 
-  // Scroll-driven animation
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const windowH = window.innerHeight;
-      const progress = Math.min(1, scrollY / (windowH * 1.5));
+      const totalScroll = document.documentElement.scrollHeight - windowH;
+      const progress = Math.min(1, scrollY / totalScroll);
 
-      // Draw sword from scabbard
-      targetDraw.current = Math.min(1, progress * 1.8);
+      // Draw sword early
+      targetDraw.current = Math.min(1, progress * 3);
 
-      // Move towards camera (z from 0 to 2.5) with scale increase
-      targetZ.current = progress * 2.5;
-      targetScale.current = 1 + progress * 0.8;
+      // Move towards camera
+      targetZ.current = progress * 3;
+
+      // Rotate to face the user as they scroll
+      // Start: angled side view → End: blade pointing at camera
+      targetRotX.current = 0.1 + progress * 0.4;           // tilt up slightly
+      targetRotY.current = -0.3 + progress * (Math.PI * 0.8); // rotate around Y to face user
+      targetRotZ.current = 0.15 - progress * 0.6;           // level out the tilt
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -213,35 +218,35 @@ function KatanaModel() {
   useFrame(({ clock, pointer }) => {
     if (!groupRef.current) return;
 
-    // Smooth interpolation (lerp factor controls smoothness)
-    const lerp = 0.04;
+    const lerpSpeed = 0.035;
 
     // Smooth draw
-    drawProgressRef.current += (targetDraw.current - drawProgressRef.current) * lerp;
+    drawProgressRef.current += (targetDraw.current - drawProgressRef.current) * lerpSpeed;
     setDrawProgress(drawProgressRef.current);
 
-    // Smooth Z movement towards camera
-    currentZ.current += (targetZ.current - currentZ.current) * lerp;
-    groupRef.current.position.z = currentZ.current;
+    // Smooth Z movement
+    groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, targetZ.current, lerpSpeed);
 
-    // Smooth scale
-    currentScale.current += (targetScale.current - currentScale.current) * lerp;
+    // Smooth rotation towards user + subtle cursor reactivity
+    const cursorInfluenceX = pointer.y * 0.08;
+    const cursorInfluenceY = pointer.x * 0.1;
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotX.current + cursorInfluenceX, lerpSpeed);
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY.current + cursorInfluenceY, lerpSpeed);
+    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetRotZ.current, lerpSpeed);
+
+    // Keep centered with subtle float
+    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, 0, lerpSpeed);
+    groupRef.current.position.y = Math.sin(clock.getElapsedTime() * 0.4) * 0.04;
+
+    // Subtle scale growth
     const baseScale = Math.min(viewport.width / 5, 1.2);
-    groupRef.current.scale.setScalar(baseScale * currentScale.current);
-
-    // Cursor-reactive rotation (subtle)
-    const targetRotY = pointer.x * 0.15;
-    const targetRotX = pointer.y * 0.1;
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY - 0.3, 0.03);
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotX + 0.1, 0.03);
-
-    // Subtle floating motion
-    groupRef.current.position.y = Math.sin(clock.getElapsedTime() * 0.4) * 0.05;
-    groupRef.current.position.x = 0.5;
+    const scrollScale = 1 + (targetZ.current / 3) * 0.5;
+    const s = THREE.MathUtils.lerp(groupRef.current.scale.x, baseScale * scrollScale, lerpSpeed);
+    groupRef.current.scale.setScalar(s);
   });
 
   return (
-    <group ref={groupRef} position={[0.5, 0, 0]} rotation={[0.1, -0.3, 0.15]}>
+    <group ref={groupRef} position={[0, 0, 0]} rotation={[0.1, -0.3, 0.15]}>
       <KatanaBlade drawProgress={drawProgress} />
       <Tsuba />
       <Handle />
