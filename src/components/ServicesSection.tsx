@@ -5,7 +5,7 @@ import { Flame, Shield, Users, Trophy } from "lucide-react";
 const services = [
   { icon: Flame, title: "Kata Training", desc: "Perfect your form through precise, powerful kata sequences passed down through generations." },
   { icon: Shield, title: "Kumite Sparring", desc: "Develop timing, reflexes, and tactical awareness in controlled combat sessions." },
-  { icon: Users, title: "Youth Programs", desc: "Build discipline, confidence, and respect in young martial artists ages 5–15." },
+  { icon: Users, title: "Youth Programs", desc: "Build discipline, confidence, and respect in young martial artists ages 5–50." },
   { icon: Trophy, title: "Competition Prep", desc: "Elite training for tournament fighters seeking regional and national titles." },
 ];
 
