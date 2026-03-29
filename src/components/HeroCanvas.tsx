@@ -183,17 +183,28 @@ function FloatingParticles() {
 
 function KatanaModel() {
   const groupRef = useRef<THREE.Group>(null);
-  const [drawProgress, setDrawProgress] = useState(0);
+  const drawProgressRef = useRef(0);
   const targetDraw = useRef(0);
+  const targetZ = useRef(0);
+  const currentZ = useRef(0);
+  const currentScale = useRef(1);
+  const targetScale = useRef(1);
+  const [drawProgress, setDrawProgress] = useState(0);
   const { viewport } = useThree();
 
-  // Scroll-driven draw animation
+  // Scroll-driven animation
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const windowH = window.innerHeight;
-      // Draw fully within first viewport scroll
-      targetDraw.current = Math.min(1, scrollY / (windowH * 0.8));
+      const progress = Math.min(1, scrollY / (windowH * 1.5));
+
+      // Draw sword from scabbard
+      targetDraw.current = Math.min(1, progress * 1.8);
+
+      // Move towards camera (z from 0 to 2.5) with scale increase
+      targetZ.current = progress * 2.5;
+      targetScale.current = 1 + progress * 0.8;
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -202,8 +213,21 @@ function KatanaModel() {
   useFrame(({ clock, pointer }) => {
     if (!groupRef.current) return;
 
-    // Smooth draw interpolation
-    setDrawProgress((prev) => prev + (targetDraw.current - prev) * 0.05);
+    // Smooth interpolation (lerp factor controls smoothness)
+    const lerp = 0.04;
+
+    // Smooth draw
+    drawProgressRef.current += (targetDraw.current - drawProgressRef.current) * lerp;
+    setDrawProgress(drawProgressRef.current);
+
+    // Smooth Z movement towards camera
+    currentZ.current += (targetZ.current - currentZ.current) * lerp;
+    groupRef.current.position.z = currentZ.current;
+
+    // Smooth scale
+    currentScale.current += (targetScale.current - currentScale.current) * lerp;
+    const baseScale = Math.min(viewport.width / 5, 1.2);
+    groupRef.current.scale.setScalar(baseScale * currentScale.current);
 
     // Cursor-reactive rotation (subtle)
     const targetRotY = pointer.x * 0.15;
@@ -213,13 +237,11 @@ function KatanaModel() {
 
     // Subtle floating motion
     groupRef.current.position.y = Math.sin(clock.getElapsedTime() * 0.4) * 0.05;
+    groupRef.current.position.x = 0.5;
   });
 
-  // Scale based on viewport
-  const scale = Math.min(viewport.width / 5, 1.2);
-
   return (
-    <group ref={groupRef} scale={scale} position={[0.5, 0, 0]} rotation={[0.1, -0.3, 0.15]}>
+    <group ref={groupRef} position={[0.5, 0, 0]} rotation={[0.1, -0.3, 0.15]}>
       <KatanaBlade drawProgress={drawProgress} />
       <Tsuba />
       <Handle />
