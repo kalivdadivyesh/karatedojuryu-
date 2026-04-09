@@ -2,9 +2,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useRef, useMemo, useState, useEffect } from "react";
 import * as THREE from "three";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import KatanaBlade from "./katana/KatanaBlade";
-import KatanaSaya from "./katana/KatanaSaya";
-import KatanaHandle from "./katana/KatanaHandle";
+import { useTexture } from "@react-three/drei";
 
 /* ─── Shared scroll state (avoids React re-renders in useFrame) ─── */
 const scrollState = {
@@ -150,54 +148,44 @@ function SlashParticles() {
   );
 }
 
-/* ─── Katana Assembly with scroll-driven phases ─── */
+/* ─── Katana Image Sprite with scroll-driven phases ─── */
 function KatanaAssembly() {
   const group = useRef<THREE.Group>(null);
-  const [drawProgress, setDrawProgress] = useState(0);
   const { viewport } = useThree();
+  const texture = useTexture("/images/katana.png");
 
   // Smoothed values
-  const smooth = useRef({ draw: 0, spin: 0, slash: 0, end: 0, z: 0, rotX: 0, rotY: -0.15, rotZ: 0.25 });
+  const smooth = useRef({ draw: 0, spin: 0, slash: 0, end: 0 });
 
   useFrame(({ clock, pointer }) => {
     if (!group.current) return;
     const s = smooth.current;
     const t = scrollState;
-    const l = 0.04; // lerp speed
+    const l = 0.04;
 
-    // Smooth scroll values
     s.draw = THREE.MathUtils.lerp(s.draw, t.draw, l);
     s.spin = THREE.MathUtils.lerp(s.spin, t.spin, l);
     s.slash = THREE.MathUtils.lerp(s.slash, t.slash, l);
     s.end = THREE.MathUtils.lerp(s.end, t.end, l);
 
-    setDrawProgress(s.draw);
-
-    // Phase 1: Draw (0-30%) - blade reveals
-    // Phase 2: Spin (30-50%) - katana spins on axis
-    // Phase 3: Slash (50-65%) - fast rotation slash
-    // Phase 4: End (65-100%) - approach camera, face user
-
-    // Spin: full rotation on Y axis with acceleration
+    // Spin
     const spinEase = s.spin < 0.5
-      ? 2 * s.spin * s.spin  // ease in
-      : 1 - Math.pow(-2 * s.spin + 2, 2) / 2;  // ease out
+      ? 2 * s.spin * s.spin
+      : 1 - Math.pow(-2 * s.spin + 2, 2) / 2;
     const spinAngle = spinEase * Math.PI * 2;
 
-    // Slash: sharp fast rotation
-    const slashEase = 1 - Math.pow(1 - s.slash, 3); // ease out cubic
+    // Slash
+    const slashEase = 1 - Math.pow(1 - s.slash, 3);
     const slashAngle = slashEase * -Math.PI * 0.6;
 
-    // End: approach and face user
+    // End
     const endZ = s.end * 2.5;
     const endRotY = s.end * Math.PI * 0.5;
 
-    // Target rotations
     const targetRotX = s.draw * 0.1 + s.slash * 0.15;
     const targetRotY = -0.15 + spinAngle + endRotY;
     const targetRotZ = 0.25 - s.draw * 0.15 + slashAngle;
 
-    // Apply with cursor influence
     const cx = pointer.y * 0.03;
     const cy = pointer.x * 0.04;
 
@@ -205,11 +193,9 @@ function KatanaAssembly() {
     group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, targetRotY + cy, l);
     group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, targetRotZ, l);
 
-    // Position
     group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, endZ, l);
     group.current.position.y = Math.sin(clock.getElapsedTime() * 0.25) * 0.015;
 
-    // Scale
     const baseScale = Math.min(viewport.width / 4, 1.4);
     const scrollScale = 1 + s.end * 0.5;
     const targetScale = baseScale * scrollScale;
@@ -217,11 +203,17 @@ function KatanaAssembly() {
     group.current.scale.setScalar(sc);
   });
 
+  // Aspect ratio of the katana image (wide horizontal)
+  const aspect = texture.image ? texture.image.width / texture.image.height : 10;
+  const planeHeight = 0.6;
+  const planeWidth = planeHeight * aspect;
+
   return (
     <group ref={group} position={[0, 0, 0]} rotation={[0, -0.15, 0.25]}>
-      <KatanaBlade drawProgress={drawProgress} />
-      <KatanaHandle />
-      <KatanaSaya drawProgress={drawProgress} />
+      <mesh>
+        <planeGeometry args={[planeWidth, planeHeight]} />
+        <meshBasicMaterial map={texture} transparent alphaTest={0.1} side={THREE.DoubleSide} />
+      </mesh>
     </group>
   );
 }
