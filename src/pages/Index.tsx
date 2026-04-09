@@ -6,6 +6,7 @@ import AboutSection from "@/components/AboutSection";
 import KatanaSection from "@/components/KatanaSection";
 import Footer from "@/components/Footer";
 import HeroCanvas from "@/components/HeroCanvas";
+import SlashOverlay from "@/components/SlashOverlay";
 
 export default function Index() {
   return (
@@ -14,6 +15,8 @@ export default function Index() {
       <div className="fixed inset-0 z-0">
         <HeroCanvas />
       </div>
+      {/* Slash overlay */}
+      <SlashOverlay />
       <div className="relative z-10">
         <Navbar />
         <HeroSection />
