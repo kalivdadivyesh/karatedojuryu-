@@ -108,9 +108,7 @@
 
   .section-padding {
     @apply px-6 md:px-12 lg:px-24 py-24 md:py-32;
-    background: hsl(var(--background) / 0.55);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: hsl(var(--background) / 0.3);
   }
 }
 
