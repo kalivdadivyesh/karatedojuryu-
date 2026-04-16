@@ -1,17 +1,36 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Dashboard() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isLoading && !user) navigate("/auth");
-  }, [user, isLoading, navigate]);
+    if (!authLoading && !user) navigate("/auth");
+    
+    if (user) {
+      fetchProfile();
+    }
+  }, [user, authLoading, navigate]);
 
-  if (isLoading || !user) return null;
+  async function fetchProfile() {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("auth_id", user?.id)
+      .single();
+    
+    if (data) setProfile(data);
+    setIsLoading(false);
+  }
+
+  if (authLoading || !user || isLoading) return null;
 
   const handleLogout = async () => {
     await logout();
@@ -26,13 +45,33 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <h1 className="font-display text-3xl font-bold glow-text mb-1">Welcome, {user.name}</h1>
+          <h1 className="font-display text-3xl font-bold glow-text mb-1">Welcome, {profile?.name || user.name}</h1>
           <p className="text-muted-foreground font-body text-sm">
-            ID: <span className="text-accent font-mono">{user.hex_id}</span>
+            Code: <span className="text-accent font-mono">{profile?.code || user.hex_id}</span>
           </p>
+          {profile?.role === 'admin' && (
+            <div className="mt-4">
+              <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Admin</span>
+            </div>
+          )}
         </motion.div>
 
         <div className="grid gap-6">
+          {profile?.role === 'admin' && (
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.05 }}
+              onClick={() => navigate("/admin")}
+              className="glass-card p-6 text-left border-primary/20 hover:border-primary/60 transition-all group cursor-pointer bg-primary/5"
+            >
+              <h2 className="font-display text-xl font-semibold text-primary group-hover:text-primary transition-colors">
+                🛡️ Admin Panel
+              </h2>
+              <p className="text-muted-foreground text-sm font-body mt-1">Manage students, mark attendance, and update belts</p>
+            </motion.button>
+          )}
+
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}

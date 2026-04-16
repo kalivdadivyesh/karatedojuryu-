@@ -77,7 +77,16 @@ serve(async (req) => {
     // Insert user profile
     const { data: user, error: userError } = await supabase
       .from('users')
-      .insert({ hex_id, name, age, password_hash: 'supabase_auth', auth_id: authUserId, belt_level: 'White' })
+      .insert({ 
+        hex_id, 
+        name, 
+        age, 
+        password_hash: 'supabase_auth', 
+        auth_id: authUserId, 
+        belt_level: 'white',
+        code: hex_id,
+        role: 'student'
+      })
       .select()
       .single();
 
@@ -89,7 +98,7 @@ serve(async (req) => {
       });
     }
 
-    // Create role
+    // Create role (legacy table support)
     await supabase.from('user_roles').insert({ user_id: user.id, role: 'user' });
 
     // Sign in to get session token
@@ -99,7 +108,15 @@ serve(async (req) => {
     });
 
     return new Response(JSON.stringify({
-      user: { id: user.id, hex_id: user.hex_id, name: user.name, age: user.age, belt_level: user.belt_level, role: 'user' },
+      user: { 
+        id: user.id, 
+        hex_id: user.hex_id, 
+        name: user.name, 
+        age: user.age, 
+        belt_level: user.belt_level, 
+        role: 'student',
+        code: user.code
+      },
       session: signInData?.session || null,
     }), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },

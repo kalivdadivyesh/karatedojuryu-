@@ -5,22 +5,35 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Attendance() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!isLoading && !user) { navigate("/auth"); return; }
+    if (!authLoading && !user) { navigate("/auth"); return; }
     if (!user) return;
 
-    const fetchAttendance = async () => {
-      // Fetch from new attendance_records table
+    const fetchProfileAndAttendance = async () => {
+      // First get the internal user ID from public.users
+      const { data: profile, error: profileError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("auth_id", user.id)
+        .single();
+
+      if (profileError) {
+        setError("Failed to load profile");
+        setLoading(false);
+        return;
+      }
+
+      // Fetch from new attendance table
       const { data, error } = await supabase
-        .from("attendance_records")
+        .from("attendance")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", profile.id)
         .order("date", { ascending: false });
 
       if (error) setError(error.message);
@@ -28,10 +41,10 @@ export default function Attendance() {
       setLoading(false);
     };
 
-    fetchAttendance();
-  }, [user, isLoading, navigate]);
+    fetchProfileAndAttendance();
+  }, [user, authLoading, navigate]);
 
-  if (isLoading || !user) return null;
+  if (authLoading || !user) return null;
 
   const presentCount = records.filter(r => r.status === 'present').length;
   const totalCount = records.length;

@@ -5,22 +5,22 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const BELTS = [
-  { name: "White", color: "bg-white", text: "text-black" },
-  { name: "Yellow", color: "bg-yellow-400", text: "text-black" },
-  { name: "Blue", color: "bg-blue-500", text: "text-white" },
-  { name: "Green", color: "bg-green-500", text: "text-white" },
-  { name: "Black", color: "bg-black border border-white/20", text: "text-white" },
+  { name: "white", color: "bg-white", text: "text-black" },
+  { name: "yellow", color: "bg-yellow-400", text: "text-black" },
+  { name: "green", color: "bg-green-500", text: "text-white" },
+  { name: "blue", color: "bg-blue-500", text: "text-white" },
+  { name: "black", color: "bg-black border border-white/20", text: "text-white" },
 ];
 
 export default function Progress() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [beltLevel, setBeltLevel] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!isLoading && !user) { navigate("/auth"); return; }
+    if (!authLoading && !user) { navigate("/auth"); return; }
     if (!user) return;
 
     const fetchProgress = async () => {
@@ -28,20 +28,20 @@ export default function Progress() {
       const { data, error } = await supabase
         .from("users")
         .select("belt_level")
-        .eq("id", user.id)
-        .maybeSingle();
+        .eq("auth_id", user.id)
+        .single();
 
       if (error) setError(error.message);
-      else setBeltLevel(data?.belt_level || "White");
+      else setBeltLevel(data?.belt_level || "white");
       setLoading(false);
     };
 
     fetchProgress();
-  }, [user, isLoading, navigate]);
+  }, [user, authLoading, navigate]);
 
-  if (isLoading || !user) return null;
+  if (authLoading || !user) return null;
 
-  const currentIndex = BELTS.findIndex((b) => b.name === beltLevel);
+  const currentIndex = BELTS.findIndex((b) => b.name.toLowerCase() === beltLevel.toLowerCase());
 
   return (
     <div className="min-h-screen bg-background px-4 py-12">
@@ -84,7 +84,7 @@ export default function Progress() {
                 transition={{ type: "spring", stiffness: 200 }}
                 className={`w-48 h-12 rounded-lg ${BELTS[currentIndex]?.color} ${BELTS[currentIndex]?.text} flex items-center justify-center font-display font-bold text-xl shadow-lg`}
               >
-                {beltLevel} Belt
+                <span className="capitalize">{beltLevel}</span> &nbsp;Belt
               </motion.div>
 
               <div className="w-full mt-4">
@@ -99,7 +99,7 @@ export default function Progress() {
                       <span className={`text-[10px] font-body ${
                         i <= currentIndex ? "text-foreground" : "text-muted-foreground"
                       }`}>
-                        {belt.name}
+                        <span className="capitalize">{belt.name}</span>
                       </span>
                     </div>
                   ))}

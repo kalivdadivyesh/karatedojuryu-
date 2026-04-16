@@ -65,7 +65,8 @@ serve(async (req) => {
         name: user.name,
         age: user.age,
         belt_level: user.belt_level,
-        role: roleData?.role || 'user',
+        role: user.role || (roleData?.role === 'admin' ? 'admin' : 'student'),
+        code: user.code || user.hex_id
       },
       session: signInData.session,
     }), {
