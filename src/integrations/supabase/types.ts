@@ -49,6 +49,38 @@ export type Database = {
           },
         ]
       }
+      attendance_records: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_records_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       progress: {
         Row: {
           belt_level: string
@@ -110,6 +142,8 @@ export type Database = {
       users: {
         Row: {
           age: number
+          auth_id: string | null
+          belt_level: string
           created_at: string
           hex_id: string
           id: string
@@ -118,6 +152,8 @@ export type Database = {
         }
         Insert: {
           age: number
+          auth_id?: string | null
+          belt_level?: string
           created_at?: string
           hex_id: string
           id?: string
@@ -126,6 +162,8 @@ export type Database = {
         }
         Update: {
           age?: number
+          auth_id?: string | null
+          belt_level?: string
           created_at?: string
           hex_id?: string
           id?: string
@@ -139,7 +177,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_id_from_auth: { Args: { _auth_id: string }; Returns: string }
+      get_user_role: { Args: { _auth_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"
