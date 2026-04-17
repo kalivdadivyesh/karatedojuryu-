@@ -1,8 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+
+interface StoredUser {
+  name: string;
+  age: number;
+  password: string;
+}
+
+const STORAGE_KEY = "karate_users";
+const SESSION_KEY = "karate_current_user";
+
+function getUsers(): StoredUser[] {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveUsers(users: StoredUser[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
 
 export default function Auth() {
   const [isSignup, setIsSignup] = useState(false);
@@ -12,10 +31,9 @@ export default function Auth() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -23,12 +41,10 @@ export default function Auth() {
       setError("Passwords do not match");
       return;
     }
-
     if (isSignup && (!name.trim() || !age || !password)) {
       setError("All fields are required");
       return;
     }
-
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
       return;
@@ -36,33 +52,34 @@ export default function Auth() {
 
     setLoading(true);
     try {
-      const fnName = isSignup ? "signup" : "login";
-      const body = isSignup
-        ? { name: name.trim(), age: parseInt(age), password }
-        : { name: name.trim(), password };
+      const users = getUsers();
+      const trimmed = name.trim();
 
-      const { data, error: fnError } = await supabase.functions.invoke(fnName, {
-        body,
-      });
-
-      if (fnError) {
-        setError(fnError.message || "Something went wrong");
-        setLoading(false);
-        return;
+      if (isSignup) {
+        if (users.some((u) => u.name.toLowerCase() === trimmed.toLowerCase())) {
+          setError("User with this name already exists");
+          setLoading(false);
+          return;
+        }
+        const newUser: StoredUser = { name: trimmed, age: parseInt(age), password };
+        users.push(newUser);
+        saveUsers(users);
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ name: trimmed, age: parseInt(age) }));
+      } else {
+        const found = users.find(
+          (u) => u.name.toLowerCase() === trimmed.toLowerCase() && u.password === password
+        );
+        if (!found) {
+          setError("Invalid name or password");
+          setLoading(false);
+          return;
+        }
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ name: found.name, age: found.age }));
       }
 
-      if (data?.error) {
-        setError(data.error);
-        setLoading(false);
-        return;
-      }
-
-      if (data?.session) {
-        login(data.user, data.session);
-      }
-      navigate("/dashboard");
+      navigate("/");
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      setError(err?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -166,12 +183,7 @@ export default function Auth() {
               disabled={loading}
               className="glow-button w-full text-center disabled:opacity-50"
             >
-              {loading ? (
-                <span className="inline-flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                  {isSignup ? "Creating Account..." : "Logging In..."}
-                </span>
-              ) : isSignup ? "Sign Up" : "Log In"}
+              {loading ? "Please wait..." : isSignup ? "Sign Up" : "Log In"}
             </button>
           </form>
 
