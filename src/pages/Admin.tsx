@@ -27,9 +27,8 @@ const BELT_LEVELS = ["white", "yellow", "green", "blue", "black"];
 interface Student {
   id: string;
   name: string;
-  code: string;
+  hex_id: string;
   belt_level: string;
-  role: string;
 }
 
 export default function Admin() {
@@ -46,13 +45,11 @@ export default function Admin() {
         return;
       }
 
-      const { data: profile, error } = await supabase
-        .from("users")
-        .select("role")
-        .eq("auth_id", user.id)
-        .single();
+      const { data: role, error } = await supabase.rpc("get_user_role", {
+        _auth_id: user.id,
+      });
 
-      if (error || profile?.role !== "admin") {
+      if (error || role !== "admin") {
         toast.error("Unauthorized access");
         navigate("/");
         return;
@@ -66,15 +63,28 @@ export default function Admin() {
 
   async function fetchStudents() {
     setIsLoading(true);
+    const { data: adminRoles } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin");
+    const adminIds = new Set((adminRoles || []).map((r) => r.user_id));
+
     const { data, error } = await supabase
       .from("users")
-      .select("*")
-      .eq("role", "student");
+      .select("id, name, hex_id, belt_level");
 
     if (error) {
       toast.error("Failed to fetch students");
     } else {
-      setStudents(data || []);
+      const filtered = (data || [])
+        .filter((u) => !adminIds.has(u.id))
+        .map((u) => ({
+          id: u.id,
+          name: u.name,
+          hex_id: u.hex_id,
+          belt_level: u.belt_level,
+        }));
+      setStudents(filtered);
     }
     setIsLoading(false);
   }
@@ -94,7 +104,7 @@ export default function Admin() {
   }
 
   async function markAttendance(studentId: string, status: "present" | "absent") {
-    const { error } = await supabase.from("attendance").insert({
+    const { error } = await supabase.from("attendance_records").insert({
       user_id: studentId,
       date: new Date().toISOString().split("T")[0],
       status: status,
