@@ -1,0 +1,1 @@
+DELETE FROM public.users WHERE auth_id IS NULL;
