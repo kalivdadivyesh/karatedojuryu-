@@ -154,7 +154,7 @@ export default function Admin() {
                 {students.map((student) => (
                   <TableRow key={student.id}>
                     <TableCell className="font-medium">{student.name}</TableCell>
-                    <TableCell className="font-mono text-xs">{student.code}</TableCell>
+                    <TableCell className="font-mono text-xs">{student.hex_id}</TableCell>
                     <TableCell>
                       <Select
                         defaultValue={student.belt_level.toLowerCase()}
