@@ -29,9 +29,9 @@ export default function Attendance() {
         return;
       }
 
-      // Fetch from new attendance table
+      // Fetch from per-date attendance_records table
       const { data, error } = await supabase
-        .from("attendance")
+        .from("attendance_records")
         .select("*")
         .eq("user_id", profile.id)
         .order("date", { ascending: false });
