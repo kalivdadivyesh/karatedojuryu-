@@ -43,7 +43,7 @@ export default function Navbar() {
             </button>
           ))}
         </div>
-        <button className="glow-button text-sm !px-5 !py-2" onClick={() => window.location.href = '/auth'}>Login / Sign Up</button>
+        <button className="glow-button text-sm !px-5 !py-2" onClick={() => window.location.href = '/login'}>Login / Sign Up</button>
       </div>
     </motion.nav>
   );
