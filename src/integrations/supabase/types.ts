@@ -14,41 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      attendance: {
-        Row: {
-          attended_dates: Json
-          created_at: string
-          id: string
-          upcoming_classes: Json
-          updated_at: string
-          user_hex_id: string
-        }
-        Insert: {
-          attended_dates?: Json
-          created_at?: string
-          id?: string
-          upcoming_classes?: Json
-          updated_at?: string
-          user_hex_id: string
-        }
-        Update: {
-          attended_dates?: Json
-          created_at?: string
-          id?: string
-          upcoming_classes?: Json
-          updated_at?: string
-          user_hex_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "attendance_user_hex_id_fkey"
-            columns: ["user_hex_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["hex_id"]
-          },
-        ]
-      }
       attendance_records: {
         Row: {
           created_at: string
@@ -61,7 +26,7 @@ export type Database = {
           created_at?: string
           date: string
           id?: string
-          status?: string
+          status: string
           user_id: string
         }
         Update: {
@@ -81,94 +46,78 @@ export type Database = {
           },
         ]
       }
-      progress: {
+      upcoming_classes: {
         Row: {
-          belt_level: string
+          class_date: string
           created_at: string
           id: string
-          updated_at: string
-          user_hex_id: string
         }
         Insert: {
-          belt_level?: string
+          class_date: string
           created_at?: string
           id?: string
-          updated_at?: string
-          user_hex_id: string
         }
         Update: {
-          belt_level?: string
+          class_date?: string
           created_at?: string
           id?: string
-          updated_at?: string
-          user_hex_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "progress_user_hex_id_fkey"
-            columns: ["user_hex_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["hex_id"]
-          },
-        ]
+        Relationships: []
       }
       user_roles: {
         Row: {
+          created_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
+          created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
+          created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       users: {
         Row: {
-          age: number
-          auth_id: string | null
           belt_level: string
           created_at: string
-          hex_id: string
+          email: string
+          hex_code: string
           id: string
+          is_restricted: boolean
           name: string
-          password_hash: string
+          phone: string
+          username: string
         }
         Insert: {
-          age: number
-          auth_id?: string | null
           belt_level?: string
           created_at?: string
-          hex_id: string
-          id?: string
+          email: string
+          hex_code: string
+          id: string
+          is_restricted?: boolean
           name: string
-          password_hash: string
+          phone: string
+          username: string
         }
         Update: {
-          age?: number
-          auth_id?: string | null
           belt_level?: string
           created_at?: string
-          hex_id?: string
+          email?: string
+          hex_code?: string
           id?: string
+          is_restricted?: boolean
           name?: string
-          password_hash?: string
+          phone?: string
+          username?: string
         }
         Relationships: []
       }
@@ -177,8 +126,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_user_id_from_auth: { Args: { _auth_id: string }; Returns: string }
-      get_user_role: { Args: { _auth_id: string }; Returns: string }
+      generate_unique_hex_code: { Args: never; Returns: string }
+      get_email_by_username: { Args: { _username: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_user_restricted: { Args: { _username: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"
