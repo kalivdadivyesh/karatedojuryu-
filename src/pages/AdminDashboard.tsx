@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Trash2, Edit, Calendar as CalIcon, Plus } from "lucide-react";
+import { LogOut, Trash2, Edit, Calendar as CalIcon, Plus, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { BELTS, BELT_LABELS, Belt } from "@/lib/belts";
@@ -125,9 +125,14 @@ export default function AdminDashboard() {
             <h1 className="font-display text-3xl font-bold glow-text">Admin · 道場</h1>
             <p className="text-muted-foreground font-body mt-1">Manage warriors</p>
           </div>
-          <button onClick={async () => { await signOut(); navigate("/login"); }} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg font-body text-sm">
-            <LogOut className="w-4 h-4" /> Logout
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg font-body text-sm">
+              <Home className="w-4 h-4" /> Home
+            </button>
+            <button onClick={async () => { await signOut(); navigate("/login"); }} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg font-body text-sm">
+              <LogOut className="w-4 h-4" /> Logout
+            </button>
+          </div>
         </div>
 
         {/* Upcoming classes */}
