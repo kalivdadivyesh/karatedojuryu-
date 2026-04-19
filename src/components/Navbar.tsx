@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const links = ["Home", "Programs", "About", "Contact"];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { user, role, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 50);
@@ -43,7 +47,18 @@ export default function Navbar() {
             </button>
           ))}
         </div>
-        <button className="glow-button text-sm !px-5 !py-2" onClick={() => window.location.href = '/login'}>Login / Sign Up</button>
+        {user ? (
+          <div className="flex items-center gap-2">
+            <button className="glow-button text-sm !px-5 !py-2" onClick={() => navigate(role === "admin" ? "/admin" : "/dashboard")}>
+              Dashboard
+            </button>
+            <button className="text-sm font-body text-muted-foreground hover:text-foreground px-3 py-2" onClick={async () => { await signOut(); }}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <button className="glow-button text-sm !px-5 !py-2" onClick={() => navigate("/login")}>Login / Sign Up</button>
+        )}
       </div>
     </motion.nav>
   );

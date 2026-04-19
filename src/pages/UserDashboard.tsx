@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LogOut } from "lucide-react";
+import { LogOut, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import BeltProgression from "@/components/BeltProgression";
@@ -70,9 +70,14 @@ export default function UserDashboard() {
               <span className="text-primary">#{profile.hex_code}</span>
             </p>
           </div>
-          <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg font-body text-sm transition">
-            <LogOut className="w-4 h-4" /> Logout
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg font-body text-sm transition">
+              <Home className="w-4 h-4" /> Home
+            </button>
+            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg font-body text-sm transition">
+              <LogOut className="w-4 h-4" /> Logout
+            </button>
+          </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="glass-card p-6 mb-8">
