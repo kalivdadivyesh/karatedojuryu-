@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { LogOut, Trash2, Edit, Calendar as CalIcon, Plus, Home, Award, Minus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { LogOut, Trash2, Edit, Calendar as CalIcon, Plus, Home, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchBelts, BeltRow } from "@/lib/beltsApi";
+import BeltManager from "@/components/admin/BeltManager";
 import { toast } from "sonner";
 
 interface UserRow {
@@ -180,9 +181,6 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground font-body mt-1">Manage warriors</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Link to="/admin/belts" className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-body text-sm">
-              <Award className="w-4 h-4" /> Belt Changes
-            </Link>
             <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm">
               <Home className="w-4 h-4" /> Home
             </button>
@@ -288,6 +286,15 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
+
+        <div className="mt-8">
+          <h2 className="font-display text-2xl mb-4">Belt Changes</h2>
+          <p className="text-muted-foreground font-body text-sm mb-4">
+            Manage the belt structure — changes apply live to all users.
+          </p>
+          <BeltManager />
+        </div>
+
 
         {editing && (
           <div className="fixed inset-0 bg-foreground/30 flex items-center justify-center p-4 z-50" onClick={() => setEditing(null)}>
