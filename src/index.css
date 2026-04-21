@@ -120,3 +120,53 @@
     background-clip: text;
   }
 }
+
+/* ============================================================
+   Sober light theme — scoped to dashboards via .theme-sober
+   Keeps the cinematic dark theme on the landing page intact.
+   ============================================================ */
+.theme-sober {
+  --background: 210 20% 98%;
+  --foreground: 220 25% 12%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 25% 12%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 25% 12%;
+
+  --primary: 220 70% 45%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 215 25% 94%;
+  --secondary-foreground: 220 25% 18%;
+
+  --muted: 215 20% 92%;
+  --muted-foreground: 220 12% 42%;
+
+  --accent: 38 90% 48%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 75% 52%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 215 20% 88%;
+  --input: 215 20% 90%;
+  --ring: 220 70% 45%;
+
+  --glass-bg: 0 0% 100%;
+  --glass-border: 215 20% 85%;
+}
+.theme-sober .glass-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 2px hsl(220 25% 10% / 0.04), 0 8px 24px hsl(220 25% 10% / 0.06);
+}
+.theme-sober .glow-text {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
