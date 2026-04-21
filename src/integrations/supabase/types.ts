@@ -46,6 +46,66 @@ export type Database = {
           },
         ]
       }
+      belt_change_log: {
+        Row: {
+          action_type: string
+          admin_id: string
+          affected_users_count: number
+          created_at: string
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+        }
+        Insert: {
+          action_type: string
+          admin_id: string
+          affected_users_count?: number
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string
+          affected_users_count?: number
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+        }
+        Relationships: []
+      }
+      belts: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          order_index: number
+          xp_required: number
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          order_index: number
+          xp_required?: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          order_index?: number
+          xp_required?: number
+        }
+        Relationships: []
+      }
       upcoming_classes: {
         Row: {
           class_date: string
@@ -63,6 +123,45 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      user_progress: {
+        Row: {
+          current_belt_id: string | null
+          current_xp_in_belt: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_belt_id?: string | null
+          current_xp_in_belt?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_belt_id?: string | null
+          current_xp_in_belt?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_current_belt_id_fkey"
+            columns: ["current_belt_id"]
+            isOneToOne: false
+            referencedRelation: "belts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -126,6 +225,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_belt_safe: { Args: { _belt_id: string }; Returns: number }
       generate_unique_hex_code: { Args: never; Returns: string }
       get_email_by_username: { Args: { _username: string }; Returns: string }
       has_role: {
@@ -136,6 +236,7 @@ export type Database = {
         Returns: boolean
       }
       is_user_restricted: { Args: { _username: string }; Returns: boolean }
+      reorder_belts: { Args: { _ids: string[] }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
