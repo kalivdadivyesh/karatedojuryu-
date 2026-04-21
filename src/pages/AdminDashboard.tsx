@@ -287,6 +287,15 @@ export default function AdminDashboard() {
           </table>
         </div>
 
+        <div className="mt-8">
+          <h2 className="font-display text-2xl mb-4">Belt Changes</h2>
+          <p className="text-muted-foreground font-body text-sm mb-4">
+            Manage the belt structure — changes apply live to all users.
+          </p>
+          <BeltManager />
+        </div>
+
+
         {editing && (
           <div className="fixed inset-0 bg-foreground/30 flex items-center justify-center p-4 z-50" onClick={() => setEditing(null)}>
             <div className="glass-card p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
