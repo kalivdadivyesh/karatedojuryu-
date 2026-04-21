@@ -4,21 +4,30 @@ import { motion } from "framer-motion";
 import { LogOut, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import BeltProgression from "@/components/BeltProgression";
+import DynamicBeltProgression from "@/components/DynamicBeltProgression";
+import BeltProgressRing from "@/components/BeltProgressRing";
 import AttendanceCalendar from "@/components/AttendanceCalendar";
-import { Belt } from "@/lib/belts";
+import {
+  fetchBelts,
+  fetchUserProgress,
+  computeProgress,
+  BeltRow,
+  UserProgressRow,
+} from "@/lib/beltsApi";
 
 interface Profile {
   name: string;
   username: string;
   hex_code: string;
-  belt_level: Belt;
+  belt_level: string;
 }
 
 export default function UserDashboard() {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [belts, setBelts] = useState<BeltRow[]>([]);
+  const [progress, setProgress] = useState<UserProgressRow | null>(null);
   const [attendance, setAttendance] = useState<Record<string, "present" | "absent">>({});
   const [upcoming, setUpcoming] = useState<Set<string>>(new Set());
 
@@ -29,10 +38,12 @@ export default function UserDashboard() {
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const [{ data: p }, { data: a }, { data: u }] = await Promise.all([
+      const [{ data: p }, { data: a }, { data: u }, b, pr] = await Promise.all([
         supabase.from("users").select("name, username, hex_code, belt_level").eq("id", user.id).maybeSingle(),
         supabase.from("attendance_records").select("date, status").eq("user_id", user.id),
         supabase.from("upcoming_classes").select("class_date"),
+        fetchBelts(),
+        fetchUserProgress(user.id),
       ]);
       if (p) setProfile(p as Profile);
       if (a) {
@@ -41,6 +52,8 @@ export default function UserDashboard() {
         setAttendance(map);
       }
       if (u) setUpcoming(new Set(u.map((c: any) => c.class_date)));
+      setBelts(b);
+      setProgress(pr);
     };
     load();
 
@@ -49,18 +62,21 @@ export default function UserDashboard() {
       .on("postgres_changes", { event: "*", schema: "public", table: "users", filter: `id=eq.${user.id}` }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "attendance_records", filter: `user_id=eq.${user.id}` }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "upcoming_classes" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "belts" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_progress", filter: `user_id=eq.${user.id}` }, load)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [user]);
 
   if (loading || !profile) {
-    return <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">Loading...</div>;
+    return <div className="theme-sober min-h-screen flex items-center justify-center bg-background text-muted-foreground">Loading...</div>;
   }
 
+  const { belt, percent, xpInBelt, xpRequired, isMax } = computeProgress(progress, belts);
   const handleLogout = async () => { await signOut(); navigate("/login"); };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8">
+    <div className="theme-sober min-h-screen bg-background px-4 py-8">
       <div className="max-w-5xl mx-auto">
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
           <div>
@@ -71,18 +87,49 @@ export default function UserDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg font-body text-sm transition">
+            <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm transition">
               <Home className="w-4 h-4" /> Home
             </button>
-            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary rounded-lg font-body text-sm transition">
+            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm transition">
               <LogOut className="w-4 h-4" /> Logout
             </button>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="glass-card p-6 mb-8">
-          <h2 className="font-display text-2xl mb-4">Belt Progression</h2>
-          <BeltProgression current={profile.belt_level} />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="glass-card p-8 mb-8">
+          <h2 className="font-display text-2xl mb-6">Your Progress</h2>
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="flex justify-center">
+              <BeltProgressRing
+                belt={belt}
+                percent={percent}
+                xpInBelt={xpInBelt}
+                xpRequired={xpRequired}
+                isMax={isMax}
+              />
+            </div>
+            <div className="space-y-3 font-body">
+              <div className="flex justify-between border-b border-border pb-2">
+                <span className="text-muted-foreground">Total XP</span>
+                <span className="font-semibold">{progress?.total_xp ?? 0}</span>
+              </div>
+              <div className="flex justify-between border-b border-border pb-2">
+                <span className="text-muted-foreground">XP in current belt</span>
+                <span className="font-semibold">{xpInBelt} / {xpRequired}</span>
+              </div>
+              <div className="flex justify-between border-b border-border pb-2">
+                <span className="text-muted-foreground">Progress</span>
+                <span className="font-semibold">{percent}%</span>
+              </div>
+              <p className="text-xs text-muted-foreground pt-2">
+                XP is awarded by your instructor. Keep training to advance.
+              </p>
+            </div>
+          </div>
+          <div className="mt-8">
+            <h3 className="font-display text-lg mb-3">Belt Path</h3>
+            <DynamicBeltProgression belts={belts} currentBeltId={progress?.current_belt_id ?? null} />
+          </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
