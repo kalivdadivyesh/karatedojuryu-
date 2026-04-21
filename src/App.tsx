@@ -9,6 +9,7 @@ import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
 import UserDashboard from "./pages/UserDashboard.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
+import AdminBelts from "./pages/AdminBelts.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<UserDashboard />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/belts" element={<AdminBelts />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
