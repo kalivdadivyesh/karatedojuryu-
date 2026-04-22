@@ -181,7 +181,7 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground font-body mt-1">Manage warriors</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm">
+            <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm text-black">
               <Home className="w-4 h-4" /> Home
             </button>
             <button onClick={async () => { await signOut(); navigate("/login"); }} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm">
