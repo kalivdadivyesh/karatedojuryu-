@@ -88,16 +88,16 @@ export default function UserDashboard() {
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm transition">
-              <Home className="w-4 h-4" /> Home
+              <Home className="w-4 h-4 text-black" /> Home
             </button>
             <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm transition">
-              <LogOut className="w-4 h-4" /> Logout
+              <LogOut className="w-4 h-4 text-black" /> Logout
             </button>
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="glass-card p-8 mb-8">
-          <h2 className="font-display text-2xl mb-6">Your Progress</h2>
+          <h2 className="font-display text-2xl mb-6 text-black">Your Progress</h2>
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="flex justify-center">
               <BeltProgressRing
@@ -127,13 +127,13 @@ export default function UserDashboard() {
             </div>
           </div>
           <div className="mt-8">
-            <h3 className="font-display text-lg mb-3">Belt Path</h3>
+            <h3 className="font-display text-lg mb-3 text-black">Belt Path</h3>
             <DynamicBeltProgression belts={belts} currentBeltId={progress?.current_belt_id ?? null} />
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-          <h2 className="font-display text-2xl mb-4">Attendance & Schedule</h2>
+          <h2 className="font-display text-2xl mb-4 text-black">Attendance & Schedule</h2>
           <AttendanceCalendar attendance={attendance} upcoming={upcoming} />
         </motion.div>
       </div>
