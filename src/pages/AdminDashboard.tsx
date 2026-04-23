@@ -235,15 +235,15 @@ export default function AdminDashboard() {
                 const belt = beltById(pr?.current_belt_id ?? null);
                 return (
                   <tr key={u.id} className="border-b border-border/50">
-                    <td className="py-3 pr-3">{u.name}</td>
-                    <td className="py-3 pr-3 text-muted-foreground">@{u.username}</td>
-                    <td className="py-3 pr-3">
+                    <td className="py-3 pr-3 text-black">{u.name}</td>
+                    <td className="py-3 pr-3 text-muted-foreground text-black">@{u.username}</td>
+                    <td className="py-3 pr-3 text-black">
                       <span className="inline-flex items-center gap-2">
                         <span className="w-3 h-3 rounded-full border" style={{ backgroundColor: belt?.color ?? "#ccc" }} />
                         {belt?.name ?? "—"}
                       </span>
                     </td>
-                    <td className="py-3 pr-3">
+                    <td className="py-3 pr-3 text-black">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold">{pr?.total_xp ?? 0}</span>
                         <button
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
                         </button>
                       </div>
                       {belt && (
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-muted-foreground text-black">
                           {pr?.current_xp_in_belt ?? 0} / {belt.xp_required}
                         </div>
                       )}
