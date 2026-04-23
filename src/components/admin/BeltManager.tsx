@@ -169,7 +169,7 @@ export default function BeltManager() {
                     <input
                       value={d.name}
                       onChange={(e) => setDraft(b.id, { name: e.target.value })}
-                      className="bg-secondary border border-border rounded px-2 py-1 w-full min-w-[120px]"
+                      className="bg-secondary border border-border rounded px-2 py-1 w-full min-w-[120px] text-black"
                     />
                   </td>
                   <td className="py-3 pr-2">
