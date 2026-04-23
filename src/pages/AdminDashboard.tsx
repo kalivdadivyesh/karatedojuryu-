@@ -191,7 +191,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="glass-card p-6 mb-6">
-          <h2 className="font-display text-xl mb-4 flex items-center gap-2"><CalIcon className="w-5 h-5" /> Upcoming Classes</h2>
+          <h2 className="font-display text-xl mb-4 flex items-center gap-2"><CalIcon className="w-5 h-5" /> Upcoming Classes</h2 text-black>
           <div className="flex gap-2 mb-3">
             <input type="date" value={newClassDate} onChange={(e) => setNewClassDate(e.target.value)} className="bg-secondary border border-border rounded-lg px-3 py-2 text-foreground font-body" />
             <button onClick={addClass} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-body text-sm flex items-center gap-1">
