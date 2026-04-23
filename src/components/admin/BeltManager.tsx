@@ -189,7 +189,7 @@ export default function BeltManager() {
                       {d.is_active ? "Active" : "Inactive"}
                     </button>
                   </td>
-                  <td className="py-3 pr-2">{counts[b.id] ?? 0}</td>
+                  <td className="py-3 pr-2 text-black">{counts[b.id] ?? 0}</td>
                   <td className="py-3">
                     <div className="flex gap-1">
                       <button onClick={() => move(i, -1)} disabled={i === 0} className="p-1.5 bg-secondary hover:bg-secondary/70 rounded disabled:opacity-30">
