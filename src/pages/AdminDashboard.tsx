@@ -210,7 +210,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="glass-card p-6 mb-6">
-          <h2 className="font-display text-xl mb-4">Mark Attendance For:</h2>
+          <h2 className="font-display text-xl mb-4 text-black">Mark Attendance For:</h2>
           <input type="date" value={attDate} onChange={(e) => setAttDate(e.target.value)} className="bg-secondary border border-border rounded-lg px-3 py-2 text-foreground font-body" />
         </div>
 
