@@ -105,7 +105,7 @@ export default function BeltManager() {
   return (
     <div className="space-y-6">
       <div className="glass-card p-6">
-        <h3 className="font-display text-lg mb-4">Add new belt</h3>
+        <h3 className="font-display text-lg mb-4 text-black">Add new belt</h3>
         <div className="grid sm:grid-cols-4 gap-3">
           <input
             value={creating.name}

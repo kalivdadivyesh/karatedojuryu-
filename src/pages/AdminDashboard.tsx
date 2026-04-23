@@ -288,7 +288,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="mt-8">
-          <h2 className="font-display text-2xl mb-4">Belt Changes</h2>
+          <h2 className="font-display text-2xl mb-4 text-black">Belt Changes</h2>
           <p className="text-muted-foreground font-body text-sm mb-4">
             Manage the belt structure — changes apply live to all users.
           </p>
