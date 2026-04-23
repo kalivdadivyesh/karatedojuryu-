@@ -111,7 +111,7 @@ export default function BeltManager() {
             value={creating.name}
             onChange={(e) => setCreating({ ...creating, name: e.target.value })}
             placeholder="Belt name"
-            className="bg-secondary border border-border rounded-lg px-3 py-2 font-body"
+            className="bg-secondary border border-border rounded-lg px-3 py-2 font-body text-black"
           />
           <input
             type="number"
@@ -119,7 +119,7 @@ export default function BeltManager() {
             value={creating.xp_required}
             onChange={(e) => setCreating({ ...creating, xp_required: parseInt(e.target.value) || 0 })}
             placeholder="XP required"
-            className="bg-secondary border border-border rounded-lg px-3 py-2 font-body"
+            className="bg-secondary border border-border rounded-lg px-3 py-2 font-body text-black"
           />
           <div className="flex items-center gap-2 bg-secondary border border-border rounded-lg px-3 py-2">
             <input
@@ -137,16 +137,16 @@ export default function BeltManager() {
       </div>
 
       <div className="glass-card p-6 overflow-x-auto">
-        <h3 className="font-display text-lg mb-4">Belts ({belts.length})</h3>
+        <h3 className="font-display text-lg mb-4 text-black">Belts ({belts.length})</h3>
         <table className="w-full text-sm font-body">
           <thead>
             <tr className="border-b border-border text-left text-muted-foreground">
               <th className="py-2 pr-2">#</th>
               <th className="py-2 pr-2">Color</th>
-              <th className="py-2 pr-2">Name</th>
-              <th className="py-2 pr-2">XP Required</th>
-              <th className="py-2 pr-2">Active</th>
-              <th className="py-2 pr-2">Users</th>
+              <th className="py-2 pr-2 ">Name</th>
+              <th className="py-2 pr-2 ">XP Required</th>
+              <th className="py-2 pr-2 ">Active</th>
+              <th className="py-2 pr-2 ">Users</th>
               <th className="py-2">Actions</th>
             </tr>
           </thead>
