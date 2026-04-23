@@ -197,7 +197,7 @@ BEGIN
     RAISE EXCEPTION 'Not authorized';
   END IF;
   -- temp shift to avoid unique conflicts
-  UPDATE public.belts SET order_index = order_index + 10000;
+  UPDATE public.belts SET order_index = order_index + 10000 WHERE true;
   FOR i IN 1..array_length(_ids,1) LOOP
     UPDATE public.belts SET order_index = i WHERE id = _ids[i];
   END LOOP;
