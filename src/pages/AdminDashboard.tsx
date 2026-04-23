@@ -324,7 +324,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex gap-2 mt-5">
                 <button onClick={() => updateUser(editing)} className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-body text-sm">Save</button>
-                <button onClick={() => setEditing(null)} className="flex-1 px-4 py-2 bg-secondary rounded-lg font-body text-sm">Cancel</button>
+                <button onClick={() => setEditing(null)} className="flex-1 px-4 py-2 bg-secondary rounded-lg font-body text-sm text-black">Cancel</button>
               </div>
             </div>
           </div>
