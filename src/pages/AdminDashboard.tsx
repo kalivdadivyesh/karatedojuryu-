@@ -218,7 +218,7 @@ export default function AdminDashboard() {
           <h2 className="font-display text-xl mb-4 text-black">Users ({users.length})</h2>
           <table className="w-full text-sm font-body">
             <thead>
-              <tr className="border-b border-border text-left text-muted-foreground">
+              <tr className="border-b border-border text-left text-muted-foreground text-black">
                 <th className="py-2 pr-3">Name</th>
                 <th className="py-2 pr-3">Username</th>
                 <th className="py-2 pr-3">Belt</th>
