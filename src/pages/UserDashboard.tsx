@@ -87,11 +87,11 @@ export default function UserDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm transition">
-              <Home className="w-4 h-4 text-black" /> Home
+            <button onClick={() => navigate("/")} className="flex items-center gap-2 px-4 py-2 bg-black hover:bg-black/70 rounded-lg font-body text-sm transition text-white">
+              <Home className="w-4 h-4 text-white" /> Home
             </button>
-            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/70 rounded-lg font-body text-sm transition">
-              <LogOut className="w-4 h-4 text-black" /> Logout
+            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-black hover:bg-black/70 rounded-lg font-body text-sm transition text-white">
+              <LogOut className="w-4 h-4 text-white" /> Logout
             </button>
           </div>
         </motion.div>
