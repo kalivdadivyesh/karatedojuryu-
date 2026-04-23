@@ -178,13 +178,13 @@ export default function BeltManager() {
                       min="0"
                       value={d.xp_required}
                       onChange={(e) => setDraft(b.id, { xp_required: parseInt(e.target.value) || 0 })}
-                      className="bg-secondary border border-border rounded px-2 py-1 w-24"
+                      className="bg-secondary border border-border rounded px-2 py-1 w-24 text-black"
                     />
                   </td>
                   <td className="py-3 pr-2">
                     <button
                       onClick={() => setDraft(b.id, { is_active: !d.is_active })}
-                      className={`px-2 py-1 rounded text-xs ${d.is_active ? "bg-green-600 text-white" : "bg-muted text-muted-foreground"}`}
+                      className={`px-2 py-1 rounded text-xs ${d.is_active ? "bg-green-600 text-black" : "bg-muted text-muted-foreground"}`}
                     >
                       {d.is_active ? "Active" : "Inactive"}
                     </button>
