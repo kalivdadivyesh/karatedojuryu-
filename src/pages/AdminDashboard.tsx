@@ -215,7 +215,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="glass-card p-6 overflow-x-auto">
-          <h2 className="font-display text-xl mb-4">Users ({users.length})</h2>
+          <h2 className="font-display text-xl mb-4 text-black">Users ({users.length})</h2>
           <table className="w-full text-sm font-body">
             <thead>
               <tr className="border-b border-border text-left text-muted-foreground">
