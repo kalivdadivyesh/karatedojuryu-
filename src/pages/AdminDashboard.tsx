@@ -261,13 +261,13 @@ export default function AdminDashboard() {
                     </td>
                     <td className="py-3 pr-3">
                       <div className="flex gap-1">
-                        <button onClick={() => markAttendance(u.id, "present")} className={`px-2 py-1 rounded text-xs ${todayStatus === "present" ? "bg-green-600 text-white" : "bg-secondary"}`}>P</button>
-                        <button onClick={() => markAttendance(u.id, "absent")} className={`px-2 py-1 rounded text-xs ${todayStatus === "absent" ? "bg-destructive text-white" : "bg-secondary"}`}>A</button>
+                        <button onClick={() => markAttendance(u.id, "present")} className={`px-2 py-1 rounded text-xs ${todayStatus === "present" ? "bg-green-600 text-black" : "bg-secondary"}`}>P</button>
+                        <button onClick={() => markAttendance(u.id, "absent")} className={`px-2 py-1 rounded text-xs ${todayStatus === "absent" ? "bg-destructive text-black" : "bg-secondary"}`}>A</button>
                         {todayStatus && <button onClick={() => removeAttendance(u.id)} className="px-2 py-1 rounded text-xs bg-secondary">×</button>}
                       </div>
                     </td>
                     <td className="py-3 pr-3">
-                      <button onClick={() => toggleRestrict(u)} className={`px-2 py-1 rounded text-xs ${u.is_restricted ? "bg-destructive text-white" : "bg-green-600 text-white"}`}>
+                      <button onClick={() => toggleRestrict(u)} className={`px-2 py-1 rounded text-xs ${u.is_restricted ? "bg-destructive text-black" : "bg-green-600 text-black"}`}>
                         {u.is_restricted ? "Restricted" : "Active"}
                       </button>
                     </td>
