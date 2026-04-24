@@ -100,6 +100,8 @@ export default function BeltManager() {
     const { error } = await supabase.rpc("reorder_belts", { _ids: ids });
     if (error) { toast.error(error.message); return; }
     await log("reorder", { ids: belts.map((b) => b.id) }, { ids });
+    toast.success("Belt order updated!");
+    await load();
   };
 
   return (
