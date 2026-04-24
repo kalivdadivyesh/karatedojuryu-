@@ -101,12 +101,53 @@ export default function AdminDashboard() {
   };
 
   const updateUser = async (u: UserRow) => {
-    const { error } = await supabase
+    // Update user profile
+    const { error: userError } = await supabase
       .from("users")
       .update({ name: u.name, username: u.username, email: u.email, phone: u.phone, belt_level: u.belt_level })
       .eq("id", u.id);
-    if (error) toast.error(error.message);
-    else { toast.success("Updated"); setEditing(null); }
+    
+    if (userError) {
+      toast.error(userError.message);
+      return;
+    }
+    
+    // Update belt in user_progress
+    const newBelt = belts.find((b) => b.name === u.belt_level);
+    if (newBelt) {
+      const existingProgress = progress[u.id];
+      
+      if (existingProgress) {
+        // Update existing progress record
+        const { error: updateError } = await supabase
+          .from("user_progress")
+          .update({ current_belt_id: newBelt.id, current_xp_in_belt: 0 })
+          .eq("user_id", u.id);
+        if (updateError) {
+          toast.error(updateError.message);
+          return;
+        }
+      } else {
+        // Create new progress record if it doesn't exist
+        const { error: insertError } = await supabase
+          .from("user_progress")
+          .insert({
+            user_id: u.id,
+            total_xp: 0,
+            current_belt_id: newBelt.id,
+            current_xp_in_belt: 0
+          });
+        if (insertError) {
+          toast.error(insertError.message);
+          return;
+        }
+      }
+      
+      toast.success("Updated - belt changed!");
+      setEditing(null);
+    } else {
+      toast.error("Belt not found");
+    }
   };
 
   const toggleRestrict = async (u: UserRow) => {
