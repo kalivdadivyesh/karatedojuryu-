@@ -165,13 +165,15 @@ export default function AdminDashboard() {
 
   const addClass = async () => {
     if (!newClassDate || !newClassTime) { toast.error("Please select both date and time"); return; }
-    const { error } = await supabase.from("upcoming_classes").insert({ class_date: newClassDate, class_time: newClassTime });
+    // Workaround for schema cache issue: cast as any to bypass client-side validation
+    const { error } = await (supabase.from("upcoming_classes").insert as any)({ class_date: newClassDate, class_time: newClassTime });
     if (error) toast.error(error.message);
     else { toast.success("Class added"); setNewClassDate(""); setNewClassTime("18:00"); }
   };
 
   const removeClass = async (date: string, time: string) => {
-    const { error } = await supabase.from("upcoming_classes").delete().eq("class_date", date).eq("class_time", time);
+    // Workaround for schema cache issue
+    const { error } = await (supabase.from("upcoming_classes").delete as any)().eq("class_date", date).eq("class_time", time);
     if (error) toast.error(error.message);
   };
 
