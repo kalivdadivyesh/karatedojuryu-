@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Props {
   attendance: Record<string, "present" | "absent">;
-  upcoming: Set<string>;
+  upcoming: Array<{ class_date: string; class_time: string }>;
 }
 
 const fmt = (d: Date) => d.toISOString().split("T")[0];
@@ -56,7 +56,8 @@ export default function AttendanceCalendar({ attendance, upcoming }: Props) {
           if (!d) return <div key={i} />;
           const key = fmt(d);
           const status = attendance[key];
-          const isUpcoming = upcoming.has(key);
+          const upcomingClasses = upcoming.filter(c => c.class_date === key);
+          const isUpcoming = upcomingClasses.length > 0;
           let cls = "bg-secondary/30 text-muted-foreground";
           if (status === "present") cls = "bg-green-500/80 text-white font-bold";
           else if (status === "absent") cls = "bg-destructive/80 text-white font-bold";
@@ -64,9 +65,18 @@ export default function AttendanceCalendar({ attendance, upcoming }: Props) {
           return (
             <div
               key={i}
-              className={`aspect-square rounded-md flex items-center justify-center text-sm transition ${cls}`}
+              className={`aspect-square rounded-md flex flex-col items-center justify-center text-sm transition p-1 ${cls}`}
             >
-              {d.getDate()}
+              <div>{d.getDate()}</div>
+              {isUpcoming && (
+                <div className="text-xs font-body mt-0.5">
+                  {upcomingClasses.map(c => (
+                    <div key={`${c.class_date}-${c.class_time}`} className="leading-tight">
+                      {c.class_time}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}

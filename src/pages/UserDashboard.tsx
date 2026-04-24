@@ -29,7 +29,7 @@ export default function UserDashboard() {
   const [belts, setBelts] = useState<BeltRow[]>([]);
   const [progress, setProgress] = useState<UserProgressRow | null>(null);
   const [attendance, setAttendance] = useState<Record<string, "present" | "absent">>({});
-  const [upcoming, setUpcoming] = useState<Set<string>>(new Set());
+  const [upcoming, setUpcoming] = useState<Array<{ class_date: string; class_time: string }>>([]);
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
@@ -41,7 +41,7 @@ export default function UserDashboard() {
       const [{ data: p }, { data: a }, { data: u }, b, pr] = await Promise.all([
         supabase.from("users").select("name, username, hex_code, belt_level").eq("id", user.id).maybeSingle(),
         supabase.from("attendance_records").select("date, status").eq("user_id", user.id),
-        supabase.from("upcoming_classes").select("class_date"),
+        supabase.from("upcoming_classes").select("class_date, class_time"),
         fetchBelts(),
         fetchUserProgress(user.id),
       ]);
@@ -51,7 +51,7 @@ export default function UserDashboard() {
         a.forEach((r: any) => { map[r.date] = r.status; });
         setAttendance(map);
       }
-      if (u) setUpcoming(new Set(u.map((c: any) => c.class_date)));
+      if (u) setUpcoming(u as Array<{ class_date: string; class_time: string }>);
       setBelts(b);
       setProgress(pr);
     };
