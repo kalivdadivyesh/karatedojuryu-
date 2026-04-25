@@ -112,15 +112,15 @@ export default function UserDashboard() {
             <div className="space-y-3 font-body">
               <div className="flex justify-between border-b border-border pb-2">
                 <span className="text-muted-foreground">Total XP</span>
-                <span className="font-semibold">{progress?.total_xp ?? 0}</span>
+                <span className="font-semibold text-black">{progress?.total_xp ?? 0}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
                 <span className="text-muted-foreground">XP in current belt</span>
-                <span className="font-semibold">{xpInBelt} / {xpRequired}</span>
+                <span className="font-semibold text-black">{xpInBelt} / {xpRequired}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
                 <span className="text-muted-foreground">Progress</span>
-                <span className="font-semibold">{percent}%</span>
+                <span className="font-semibold text-black">{percent}%</span>
               </div>
               <p className="text-xs text-muted-foreground pt-2">
                 XP is awarded by your instructor. Keep training to advance.

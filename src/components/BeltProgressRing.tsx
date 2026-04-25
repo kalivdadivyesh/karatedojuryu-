@@ -67,7 +67,7 @@ export default function BeltProgressRing({
             }}
           />
           <div className="absolute bottom-3 text-center">
-            <div className="text-xs uppercase tracking-widest text-muted-foreground font-body">
+            <div className="text-xs uppercase tracking-widest text-black font-body">
               {belt?.name ?? "—"}
             </div>
           </div>
@@ -75,7 +75,7 @@ export default function BeltProgressRing({
       </div>
 
       <div className="text-center">
-        <div className="font-display text-2xl font-bold">
+        <div className="font-display text-2xl font-bold text-black">
           {belt?.name ?? "No belt"} – {percent}%
         </div>
         <div className="text-sm text-muted-foreground font-body mt-1">
