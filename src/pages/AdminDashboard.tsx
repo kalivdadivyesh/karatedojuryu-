@@ -171,9 +171,10 @@ export default function AdminDashboard() {
     else { toast.success("Class added"); setNewClassDate(""); setNewClassTime("18:00"); }
   };
 
-  const removeClass = async (date: string, time: string) => {
+  const removeClass = async (date: string, time?: string | null) => {
     const { error } = await upcomingClassesApi.delete(date, time);
     if (error) toast.error(error.message);
+    else toast.success("Class removed");
   };
 
   const applyXp = async (target: UserRow, delta: number) => {
@@ -244,9 +245,9 @@ export default function AdminDashboard() {
           </div>
           <div className="flex flex-wrap gap-2">
             {classes.map((c) => (
-              <span key={`${c.class_date}-${c.class_time}`} className="px-3 py-1 bg-secondary rounded-full text-sm font-body flex items-center gap-2">
-                {c.class_date} at {c.class_time}
-                <button onClick={() => removeClass(c.class_date, c.class_time)} className="text-destructive hover:opacity-70">×</button>
+              <span key={`${c.class_date}-${c.class_time ?? "null"}`} className="px-3 py-1 bg-secondary rounded-full text-sm font-body flex items-center gap-2">
+                {c.class_date} at {c.class_time || "Unknown"}
+                <button onClick={() => removeClass(c.class_date, c.class_time ?? null)} className="text-destructive hover:opacity-70">×</button>
               </span>
             ))}
             {classes.length === 0 && <p className="text-muted-foreground text-sm font-body">No upcoming classes</p>}

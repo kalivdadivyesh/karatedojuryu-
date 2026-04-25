@@ -26,12 +26,19 @@ export const upcomingClassesApi = {
     });
   },
   
-  async delete(classDate: string, classTime: string) {
-    return await supabaseRaw
+  async delete(classDate: string, classTime?: string | null) {
+    const query = supabaseRaw
       .from('upcoming_classes')
       .delete()
-      .eq('class_date', classDate)
-      .eq('class_time', classTime);
+      .eq('class_date', classDate);
+
+    if (classTime === null || classTime === undefined) {
+      query.is('class_time', null);
+    } else {
+      query.eq('class_time', classTime);
+    }
+
+    return await query;
   },
 
   async subscribe(callback: (data: any) => void) {
