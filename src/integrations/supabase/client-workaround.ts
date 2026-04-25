@@ -19,26 +19,17 @@ export const upcomingClassesApi = {
     return await supabaseRaw.from('upcoming_classes').select('*');
   },
   
-  async add(classDate: string, classTime: string) {
+  async add(classDate: string) {
     return await (supabaseRaw.from('upcoming_classes').insert as any)({
       class_date: classDate,
-      class_time: classTime,
     });
   },
   
-  async delete(classDate: string, classTime?: string | null) {
-    const query = supabaseRaw
+  async delete(classDate: string) {
+    return await supabaseRaw
       .from('upcoming_classes')
       .delete()
       .eq('class_date', classDate);
-
-    if (classTime === null || classTime === undefined) {
-      query.is('class_time', null);
-    } else {
-      query.eq('class_time', classTime);
-    }
-
-    return await query;
   },
 
   async subscribe(callback: (data: any) => void) {
