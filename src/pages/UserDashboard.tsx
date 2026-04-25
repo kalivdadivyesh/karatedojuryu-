@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LogOut, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { upcomingClassesApi } from "@/integrations/supabase/client-workaround";
 import { useAuth } from "@/contexts/AuthContext";
 import DynamicBeltProgression from "@/components/DynamicBeltProgression";
 import BeltProgressRing from "@/components/BeltProgressRing";
@@ -38,10 +39,10 @@ export default function UserDashboard() {
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const [{ data: p }, { data: a }, { data: u }, b, pr] = await Promise.all([
+      const [{ data: p }, { data: a }, classesResult, b, pr] = await Promise.all([
         supabase.from("users").select("name, username, hex_code, belt_level").eq("id", user.id).maybeSingle(),
         supabase.from("attendance_records").select("date, status").eq("user_id", user.id),
-        supabase.from("upcoming_classes").select("class_date, class_time"),
+        upcomingClassesApi.getAll(),
         fetchBelts(),
         fetchUserProgress(user.id),
       ]);
@@ -51,7 +52,7 @@ export default function UserDashboard() {
         a.forEach((r: any) => { map[r.date] = r.status; });
         setAttendance(map);
       }
-      if (u) setUpcoming(u as Array<{ class_date: string; class_time: string }>);
+      if (classesResult.data) setUpcoming(classesResult.data as Array<{ class_date: string; class_time: string }>);
       setBelts(b);
       setProgress(pr);
     };

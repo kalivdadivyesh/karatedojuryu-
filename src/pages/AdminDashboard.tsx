@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut, Trash2, Edit, Calendar as CalIcon, Plus, Home, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { upcomingClassesApi } from "@/integrations/supabase/client-workaround";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchBelts, BeltRow } from "@/lib/beltsApi";
 import BeltManager from "@/components/admin/BeltManager";
@@ -50,10 +51,10 @@ export default function AdminDashboard() {
   }, [user, role, loading, navigate]);
 
   const load = async () => {
-    const [{ data: u }, { data: a }, { data: c }, b, { data: pr }] = await Promise.all([
+    const [{ data: u }, { data: a }, classesResult, b, { data: pr }] = await Promise.all([
       supabase.from("users").select("*").order("created_at", { ascending: false }),
       supabase.from("attendance_records").select("user_id, date, status"),
-      supabase.from("upcoming_classes").select("class_date, class_time").order("class_date").order("class_time"),
+      upcomingClassesApi.getAll(),
       fetchBelts(),
       supabase.from("user_progress").select("*"),
     ]);
@@ -66,7 +67,7 @@ export default function AdminDashboard() {
       });
       setAttendance(map);
     }
-    if (c) setClasses(c as Array<{ class_date: string; class_time: string }>);
+    if (classesResult.data) setClasses(classesResult.data as Array<{ class_date: string; class_time: string }>);
     setBelts(b);
     if (pr) {
       const m: Record<string, ProgressRow> = {};
@@ -165,15 +166,13 @@ export default function AdminDashboard() {
 
   const addClass = async () => {
     if (!newClassDate || !newClassTime) { toast.error("Please select both date and time"); return; }
-    // Workaround for schema cache issue: cast as any to bypass client-side validation
-    const { error } = await (supabase.from("upcoming_classes").insert as any)({ class_date: newClassDate, class_time: newClassTime });
+    const { error } = await upcomingClassesApi.add(newClassDate, newClassTime);
     if (error) toast.error(error.message);
     else { toast.success("Class added"); setNewClassDate(""); setNewClassTime("18:00"); }
   };
 
   const removeClass = async (date: string, time: string) => {
-    // Workaround for schema cache issue
-    const { error } = await (supabase.from("upcoming_classes").delete as any)().eq("class_date", date).eq("class_time", time);
+    const { error } = await upcomingClassesApi.delete(date, time);
     if (error) toast.error(error.message);
   };
 
