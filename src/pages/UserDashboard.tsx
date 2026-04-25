@@ -109,7 +109,7 @@ export default function UserDashboard() {
                 isMax={isMax}
               />
             </div>
-            <div className="space-y-3 font-body">
+            <div className="space-y-3 font-body text-black">
               <div className="flex justify-between border-b border-border pb-2">
                 <span className="text-muted-foreground">Total XP</span>
                 <span className="font-semibold text-black">{progress?.total_xp ?? 0}</span>
