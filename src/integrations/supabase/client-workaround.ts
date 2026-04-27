@@ -19,20 +19,18 @@ export const upcomingClassesApi = {
     return await supabaseRaw.from('upcoming_classes').select('*');
   },
   
-  async add(classDate: string, classDescription: string) {
+  async add(classDate: string) {
     // Use raw insert with proper typing bypass
     const data = {
       class_date: classDate,
-      class_description: classDescription,
     };
     return await (supabaseRaw.from('upcoming_classes') as any).insert([data]);
   },
   
-  async delete(classDate: string, classDescription: string) {
+  async delete(classDate: string) {
     return await (supabaseRaw.from('upcoming_classes') as any)
       .delete()
-      .eq('class_date', classDate)
-      .eq('class_description', classDescription);
+      .eq('class_date', classDate);
   },
 
   async subscribe(callback: (data: any) => void) {

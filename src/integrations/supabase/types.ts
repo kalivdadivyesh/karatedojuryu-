@@ -109,19 +109,16 @@ export type Database = {
       upcoming_classes: {
         Row: {
           class_date: string
-          class_description: string
           created_at: string
           id: string
         }
         Insert: {
           class_date: string
-          class_description?: string
           created_at?: string
           id?: string
         }
         Update: {
           class_date?: string
-          class_description?: string
           created_at?: string
           id?: string
         }
