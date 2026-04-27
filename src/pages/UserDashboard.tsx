@@ -30,7 +30,7 @@ export default function UserDashboard() {
   const [belts, setBelts] = useState<BeltRow[]>([]);
   const [progress, setProgress] = useState<UserProgressRow | null>(null);
   const [attendance, setAttendance] = useState<Record<string, "present" | "absent">>({});
-  const [upcoming, setUpcoming] = useState<Set<string>>(new Set());
+  const [upcoming, setUpcoming] = useState<Array<{ class_date: string; class_description: string }>>([]);
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
@@ -52,7 +52,7 @@ export default function UserDashboard() {
         a.forEach((r: any) => { map[r.date] = r.status; });
         setAttendance(map);
       }
-      if (classesResult.data) setUpcoming(new Set((classesResult.data as Array<{ class_date: string }>).map(c => c.class_date)));
+      if (classesResult.data) setUpcoming(classesResult.data as Array<{ class_date: string; class_description: string }>);
       setBelts(b);
       setProgress(pr);
     };
