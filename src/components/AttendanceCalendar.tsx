@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Props {
   attendance: Record<string, "present" | "absent">;
-  upcoming: Array<{ class_date: string; class_time: string }>;
+  upcoming: Array<{ class_date: string; class_description: string }>;
 }
 
 const fmt = (d: Date) => d.toISOString().split("T")[0];
@@ -69,10 +69,10 @@ export default function AttendanceCalendar({ attendance, upcoming }: Props) {
             >
               <div>{d.getDate()}</div>
               {isUpcoming && (
-                <div className="text-xs font-body mt-0.5">
-                  {upcomingClasses.map(c => (
-                    <div key={`${c.class_date}-${c.class_time}`} className="leading-tight">
-                      {c.class_time}
+                <div className="text-xs font-body mt-0.5 max-w-full">
+                  {upcomingClasses.map((c, idx) => (
+                    <div key={`${c.class_date}-${c.class_description}-${idx}`} className="leading-tight truncate px-0.5 text-foreground">
+                      {c.class_description}
                     </div>
                   ))}
                 </div>
