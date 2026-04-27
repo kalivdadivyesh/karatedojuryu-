@@ -165,11 +165,13 @@ export default function AdminDashboard() {
   };
 
   const addClass = async () => {
-    if (!newClassDate || !newClassTime) { toast.error("Please select both date and time"); return; }
-    const { error } = await upcomingClassesApi.add(newClassDate, newClassTime);
-    if (error) toast.error(error.message);
-    else { toast.success("Class added"); setNewClassDate(""); setNewClassTime("18:00"); }
-  };
+  if (!newClassDate || !newClassTime) { toast.error("Please select both date and time"); return; }
+  console.log('Adding class:', { newClassDate, newClassTime });
+  const { error, data } = await upcomingClassesApi.add(newClassDate, newClassTime);
+  console.log('Response:', { error, data });
+  if (error) toast.error(error.message);
+  else { toast.success("Class added"); setNewClassDate(""); setNewClassTime("18:00"); }
+};
 
   const removeClass = async (date: string, time: string) => {
     const { error } = await upcomingClassesApi.delete(date, time);
