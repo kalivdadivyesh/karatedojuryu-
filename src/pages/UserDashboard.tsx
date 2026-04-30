@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LogOut, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { upcomingClassesApi } from "@/integrations/supabase/client-workaround";
+import { upcomingClassesApi, UpcomingClass } from "@/integrations/supabase/client-workaround";
 import { useAuth } from "@/contexts/AuthContext";
 import DynamicBeltProgression from "@/components/DynamicBeltProgression";
 import BeltProgressRing from "@/components/BeltProgressRing";
@@ -30,7 +30,7 @@ export default function UserDashboard() {
   const [belts, setBelts] = useState<BeltRow[]>([]);
   const [progress, setProgress] = useState<UserProgressRow | null>(null);
   const [attendance, setAttendance] = useState<Record<string, "present" | "absent">>({});
-  const [upcoming, setUpcoming] = useState<Array<{ class_date: string; class_description: string }>>([]);
+  const [upcoming, setUpcoming] = useState<UpcomingClass[]>([]);
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
@@ -52,7 +52,7 @@ export default function UserDashboard() {
         a.forEach((r: any) => { map[r.date] = r.status; });
         setAttendance(map);
       }
-      if (classesResult.data) setUpcoming(classesResult.data as Array<{ class_date: string; class_description: string }>);
+      if (classesResult.data) setUpcoming(classesResult.data as UpcomingClass[]);
       setBelts(b);
       setProgress(pr);
     };

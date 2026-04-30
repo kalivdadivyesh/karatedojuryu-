@@ -14,25 +14,49 @@ export const supabaseRaw = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, 
 });
 
 // Type-safe wrapper for upcoming_classes queries
+export interface UpcomingClass {
+  id: string;
+  class_date: string;
+  class_time: string;
+  datetime: string;
+  created_at: string;
+}
+
 export const upcomingClassesApi = {
   async getAll() {
-    return await supabaseRaw.from('upcoming_classes').select('*');
+    return await supabaseRaw
+      .from('upcoming_classes')
+      .select('*')
+      .order('datetime', { ascending: true });
   },
   
-  async add(classDate: string, classDescription: string) {
-    // Use raw insert with proper typing bypass
+  async add(classDate: string, classTime: string) {
     const data = {
       class_date: classDate,
-      class_description: classDescription,
+      class_time: classTime,
     };
     return await (supabaseRaw.from('upcoming_classes') as any).insert([data]);
   },
   
-  async delete(classDate: string, classDescription: string) {
+  async update(id: string, classDate: string, classTime: string) {
+    return await (supabaseRaw.from('upcoming_classes') as any)
+      .update({
+        class_date: classDate,
+        class_time: classTime,
+      })
+      .eq('id', id);
+  },
+  
+  async delete(id: string) {
     return await (supabaseRaw.from('upcoming_classes') as any)
       .delete()
-      .eq('class_date', classDate)
-      .eq('class_description', classDescription);
+      .eq('id', id);
+  },
+
+  async deleteMultiple(ids: string[]) {
+    return await (supabaseRaw.from('upcoming_classes') as any)
+      .delete()
+      .in('id', ids);
   },
 
   async subscribe(callback: (data: any) => void) {

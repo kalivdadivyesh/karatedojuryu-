@@ -1,12 +1,25 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+interface UpcomingClass {
+  class_date: string;
+  class_time: string;
+}
+
 interface Props {
   attendance: Record<string, "present" | "absent">;
-  upcoming: Array<{ class_date: string; class_description: string }>;
+  upcoming: UpcomingClass[];
 }
 
 const fmt = (d: Date) => d.toISOString().split("T")[0];
+
+// Convert 24-hour time to 12-hour format
+const formatTime = (time: string) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
 
 export default function AttendanceCalendar({ attendance, upcoming }: Props) {
   const [view, setView] = useState(() => {
@@ -71,8 +84,8 @@ export default function AttendanceCalendar({ attendance, upcoming }: Props) {
               {isUpcoming && (
                 <div className="text-xs font-body mt-0.5 max-w-full">
                   {upcomingClasses.map((c, idx) => (
-                    <div key={`${c.class_date}-${c.class_description}-${idx}`} className="leading-tight truncate px-0.5 text-foreground">
-                      {c.class_description}
+                    <div key={`${c.class_date}-${c.class_time}-${idx}`} className="leading-tight truncate px-0.5 text-foreground">
+                      {formatTime(c.class_time)}
                     </div>
                   ))}
                 </div>

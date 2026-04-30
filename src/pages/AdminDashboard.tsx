@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut, Trash2, Edit, Calendar as CalIcon, Plus, Home, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { upcomingClassesApi } from "@/integrations/supabase/client-workaround";
+import { UpcomingClass } from "@/integrations/supabase/client-workaround";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchBelts, BeltRow } from "@/lib/beltsApi";
 import BeltManager from "@/components/admin/BeltManager";
+import CreateClass from "@/components/admin/CreateClass";
+import ClassesTable from "@/components/admin/ClassesTable";
+import EditModal from "@/components/admin/EditModal";
+import { useClasses } from "@/hooks/useClasses";
 import { toast } from "sonner";
 
 interface UserRow {
@@ -31,16 +35,15 @@ const todayStr = () => new Date().toISOString().split("T")[0];
 export default function AdminDashboard() {
   const { user, role, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const { classes, addClass, updateClass, deleteClass, deleteMultiple } = useClasses();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [progress, setProgress] = useState<Record<string, ProgressRow>>({});
   const [belts, setBelts] = useState<BeltRow[]>([]);
   const [attendance, setAttendance] = useState<Record<string, Record<string, "present" | "absent">>>({});
-  const [classes, setClasses] = useState<Array<{ class_date: string; class_description: string }>>([]);
   const [editing, setEditing] = useState<UserRow | null>(null);
   const [xpEditing, setXpEditing] = useState<UserRow | null>(null);
   const [xpDelta, setXpDelta] = useState<string>("");
-  const [newClassDate, setNewClassDate] = useState("");
-  const [newClassDescription, setNewClassDescription] = useState("");
+  const [editingClass, setEditingClass] = useState<UpcomingClass | null>(null);
   const [attDate, setAttDate] = useState(todayStr());
 
   useEffect(() => {
@@ -51,10 +54,9 @@ export default function AdminDashboard() {
   }, [user, role, loading, navigate]);
 
   const load = async () => {
-    const [{ data: u }, { data: a }, classesResult, b, { data: pr }] = await Promise.all([
+    const [{ data: u }, { data: a }, b, { data: pr }] = await Promise.all([
       supabase.from("users").select("*").order("created_at", { ascending: false }),
       supabase.from("attendance_records").select("user_id, date, status"),
-      upcomingClassesApi.getAll(),
       fetchBelts(),
       supabase.from("user_progress").select("*"),
     ]);
@@ -67,7 +69,6 @@ export default function AdminDashboard() {
       });
       setAttendance(map);
     }
-    if (classesResult.data) setClasses(classesResult.data as Array<{ class_date: string; class_description: string }>);
     setBelts(b);
     if (pr) {
       const m: Record<string, ProgressRow> = {};
@@ -164,19 +165,6 @@ export default function AdminDashboard() {
     if (error) toast.error(error.message); else toast.success("Deleted");
   };
 
-  const addClass = async () => {
-  if (!newClassDate || !newClassDescription) { toast.error("Please select date and description"); return; }
-  const { error } = await upcomingClassesApi.add(newClassDate, newClassDescription);
-  if (error) toast.error(error.message);
-  else { toast.success("Class added"); setNewClassDate(""); setNewClassDescription(""); }
-};
-
-  const removeClass = async (date: string, description: string) => {
-    const { error } = await upcomingClassesApi.delete(date, description);
-    if (error) toast.error(error.message);
-    else toast.success("Class removed");
-  };
-
   const applyXp = async (target: UserRow, delta: number) => {
     const cur = progress[target.id];
     if (!cur) {
@@ -234,25 +222,19 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="glass-card p-6 mb-6">
-          <h2 className="font-display text-xl mb-4 flex items-center gap-2 text-black"><CalIcon className="w-5 h-5" /> Upcoming Classes</h2 >
-          <div className="flex gap-2 mb-3 flex-wrap">
-            <input type="date" value={newClassDate} onChange={(e) => setNewClassDate(e.target.value)} className="bg-secondary border border-border rounded-lg px-3 py-2 text-foreground font-body" />
-            <input type="text" placeholder="Class description..." value={newClassDescription} onChange={(e) => setNewClassDescription(e.target.value)} className="bg-secondary border border-border rounded-lg px-3 py-2 text-foreground font-body" />
-            <button onClick={addClass} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-body text-sm flex items-center gap-1">
-              <Plus className="w-4 h-4" /> Add
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {classes.map((c) => (
-              <span key={`${c.class_date}-${c.class_description}`} className="px-3 py-1 bg-secondary rounded-full text-sm font-body flex items-center gap-2">
-                {c.class_date}: {c.class_description}
-                <button onClick={() => removeClass(c.class_date, c.class_description)} className="text-destructive hover:opacity-70">×</button>
-              </span>
-            ))}
-            {classes.length === 0 && <p className="text-muted-foreground text-sm font-body">No upcoming classes</p>}
-          </div>
-        </div>
+        <CreateClass onAdd={addClass} />
+        <ClassesTable
+          classes={classes}
+          onEdit={setEditingClass}
+          onDelete={deleteClass}
+          onDeleteMultiple={deleteMultiple}
+        />
+        <EditModal
+          isOpen={!!editingClass}
+          classData={editingClass}
+          onSave={updateClass}
+          onCancel={() => setEditingClass(null)}
+        />
 
         <div className="glass-card p-6 mb-6">
           <h2 className="font-display text-xl mb-4 text-black">Mark Attendance For:</h2>
